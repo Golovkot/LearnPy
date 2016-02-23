@@ -1,7 +1,5 @@
 from lxml import html
-import os
-import urllib.request
-import re
+import os, re, requests
 
 def get_urls(website):
     urls_clear = [] #массив для будущих ссылок
@@ -13,6 +11,17 @@ def get_urls(website):
         if href.has_key('href')== True: #если в словаре есть ключ href
             urls_clear.append(href.get('href')) #достаю ссылку
     return urls_clear
+
+def get_article(url):
+    page = requests.get(url)
+    article_tree = html.fromstring(page.content)
+    article_name = article_tree.xpath(".//dt[@itemprop='title']")[0].text #получаю название словарной статьи
+    aricle_name = article_name+'.txt'
+    f = open (aricle_name, 'w', encoding = 'utf-8')#создаю файл для словарной статьи
+    for elem in article_tree.xpath(".//*[@id='article']"):
+        f.write(html.tostring(elem,encoding='unicode',))#записываю статью в файл
+    f.close()
+    return print('file '+article_name+' is processed')
 
 os.chdir('/Users/tatianagolovko/Documents/учёба/ВШЭ/Python/2/Dmitriev')#папка, куда складывать словарь
 
@@ -32,19 +41,22 @@ for href in hrefs2: #для каждой ссылки
         cat_name = tree.xpath(".//*[@class='content']//h2")
         path = './'+str(cat_name[0].text) #создаю путь для новой папки
         os.mkdir(path) #создаю папку с этим путём
-
+        os.chdir(path)#захожу в эту папку
         hrefs3 = get_urls(href)# ищу все ссылки на странице категории
         for href in hrefs3: #для каждой ссылки со страницы категории
             if re.match('\?f=',href)!= None: #если это ссылка на следующую страницу
                 next_urls = get_urls('http://dic.academic.ru/contents.nsf/dmitriev/'+href)#получаю все ссылки с неё
                 for url in next_urls:
                     if re.match('http://dic.academic.ru/dic.nsf/dmitriev/\d', url)!= None and url not in articles2:#для каждой словарной статьи со второй страницы
+                        get_article(url)
                         articles2.add(url) #добавляю адрес в множество
                         count_aricles_2+=1
                 sum_2 = sum_2 + count_aricles_2
                 count_aricles_2 = 0
             if re.match('http://dic.academic.ru/dic.nsf/dmitriev/\d',href)!= None:#для каждой словарной статьи с первой страницы
+                get_article(href)
                 count_articles_1+=1
+        os.chdir("..") #возвращаюсь в корневую папку
         sum_1 = sum_1 + count_articles_1
         count_articles_1 = 0
         cat_num+=1
