@@ -25,7 +25,7 @@ def get_article(url):
 
 os.chdir('/Users/tatianagolovko/Documents/учёба/ВШЭ/Python/2/Dmitriev')#папка, куда складывать словарь
 
-
+#каунтеры:
 count_articles_1 = 0 #подсчет статей в категории на 1 странице
 count_aricles_2 = 0 #на второй странице
 sum_1 = 0 #общее число статьей c первых страниц
@@ -38,7 +38,7 @@ hrefs2 = get_urls("http://dic.academic.ru/contents.nsf/dmitriev/")#получа�
 for href in hrefs2: #для каждой ссылки
     if re.match('http://dic.academic.ru/contents.nsf/dmitriev/\?f=',href)!= None: #если это ссылка на категорию
         tree = html.parse(href)
-        cat_name = tree.xpath(".//*[@class='content']//h2")
+        cat_name = tree.xpath(".//*[@class='content']//h2")#извлекаю название категории
         path = './'+str(cat_name[0].text) #создаю путь для новой папки
         os.mkdir(path) #создаю папку с этим путём
         os.chdir(path)#захожу в эту папку
@@ -48,13 +48,13 @@ for href in hrefs2: #для каждой ссылки
                 next_urls = get_urls('http://dic.academic.ru/contents.nsf/dmitriev/'+href)#получаю все ссылки с неё
                 for url in next_urls:
                     if re.match('http://dic.academic.ru/dic.nsf/dmitriev/\d', url)!= None and url not in articles2:#для каждой словарной статьи со второй страницы
-                        get_article(url)
+                        get_article(url)#сохраняю словарные статьи
                         articles2.add(url) #добавляю адрес в множество
                         count_aricles_2+=1
                 sum_2 = sum_2 + count_aricles_2
                 count_aricles_2 = 0
             if re.match('http://dic.academic.ru/dic.nsf/dmitriev/\d',href)!= None:#для каждой словарной статьи с первой страницы
-                get_article(href)
+                get_article(href)#сохраняю словарные статьи
                 count_articles_1+=1
         os.chdir("..") #возвращаюсь в корневую папку
         sum_1 = sum_1 + count_articles_1
