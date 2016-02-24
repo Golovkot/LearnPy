@@ -7,7 +7,7 @@ output_path_2_main = './Mystem_xml'
 os.mkdir(output_path_1_main)
 os.mkdir(output_path_2_main)
 
-for i in range(1,80): #80 категорий, папки названы по номерам
+for i in range(1,81): #80 категорий, папки названы по номерам
     cat_path = input_path+'/'+str(i) #путь к категории со статьями
     output_path_1 = output_path_1_main+'/'+str(i)
     output_path_2 = output_path_2_main+'/'+str(i)
