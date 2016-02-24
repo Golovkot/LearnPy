@@ -22,32 +22,32 @@ def get_article(url, num):
     article_tree = html.fromstring(page.content)
     article_name = article_tree.xpath(".//dt[@itemprop='title']")[0].text #получаю название словарной статьи
 
-    path = './'+str(article_name) #создаю путь для новой папки
+    """path = './'+str(num) #создаю путь для новой папки
     os.mkdir(path) #создаю папку с этим путём
-    os.chdir(path)#захожу в эту папку
+    os.chdir(path)#захожу в эту папку"""
 
-    file_name = article_name+'.txt'
+    """file_name = article_name+'.txt'
     f = open(article_name, 'w', encoding = 'utf-8')#создаю файл для словарной статьи
     for elem in article_tree.xpath(".//*[@id='article']"):
         f.write(html.tostring(elem,encoding='unicode',))#записываю статью в файл
-    f.close()
+    f.close()"""
 
-    plain_file_name = article_name+'_plain_text.txt'
+    plain_file_name = str(num)+'_plain_text.txt'
     f_plain = open(plain_file_name, 'w', encoding = 'utf-8')#создаю файл для словарной статьи
     texts = (article_tree.xpath(".//*[@id='article']//text()"))
     for text in texts:
         f_plain.write(text)
     f_plain.close()
 
-    os.chdir("..") #возвращаюсь в папку категории
+    #os.chdir("..") #возвращаюсь в папку категории
 
 
-    path = str(os.getcwd()+'/'+file_name)
+    path = str(os.getcwd()+'/'+plain_file_name)
     source = article_tree.xpath(".//span[@itemprop='source']")[0].text
     year = article_tree.xpath(".//span[@itemprop='source-date']")[0].text
     language = 'ru'
     row_line = str(num),path,article_name,source, year, language
-    print('file '+file_name+' is processed')
+    print('file '+plain_file_name+' is processed')
     return row_line
 
 def write_csv(df):
@@ -58,7 +58,8 @@ def write_csv(df):
             writer.writerow(raw)
 
 os.mkdir('/Users/tatianagolovko/Documents/учёба/ВШЭ/Python/2/Dmitriev')
-os.chdir('/Users/tatianagolovko/Documents/учёба/ВШЭ/Python/2/Dmitriev')#папка, куда складывать словарь
+os.mkdir('/Users/tatianagolovko/Documents/учёба/ВШЭ/Python/2/Dmitriev/Dmitriev_plain_text')
+os.chdir('/Users/tatianagolovko/Documents/учёба/ВШЭ/Python/2/Dmitriev/Dmitriev_plain_text')#папка, куда складывать словарь
 
 #каунтеры:
 count_articles_1 = 0 #подсчет статей в категории на 1 странице
@@ -79,9 +80,10 @@ df.append(header) #названия столбцов для csv файла
 hrefs2 = get_urls("http://dic.academic.ru/contents.nsf/dmitriev/")#получаю массив ссылок со страницы
 for href in hrefs2: #для каждой ссылки
     if re.match('http://dic.academic.ru/contents.nsf/dmitriev/\?f=',href)!= None: #если это ссылка на категорию
+        cat_num+=1
         tree = html.parse(href)
-        cat_name = tree.xpath(".//*[@class='content']//h2")#извлекаю название категории
-        path = './'+str(cat_name[0].text) #создаю путь для новой папки
+        #cat_name = tree.xpath(".//*[@class='content']//h2")#извлекаю название категории
+        path = './'+str(cat_num) #создаю путь для новой папки
         os.mkdir(path) #создаю папку с этим путём
         os.chdir(path)#захожу в эту папку
         hrefs3 = get_urls(href)# ищу все ссылки на странице категории
@@ -105,7 +107,7 @@ for href in hrefs2: #для каждой ссылки
         os.chdir("..") #возвращаюсь в корневую папку
         sum_1 = sum_1 + count_articles_1
         count_articles_1 = 0
-        cat_num+=1
+
 write_csv(df)
 print('ссылок на статьи с первых страниц: ', sum_1)
 print('ссылок со вторых страниц: ', sum_2)
