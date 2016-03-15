@@ -1,0 +1,2 @@
+import os
+os.system("/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7 /Users/tatianagolovko/Desktop/WikiExtractor.py -o /Users/tatianagolovko/Desktop/out /Users/tatianagolovko/Desktop/rmywiki.xml")
