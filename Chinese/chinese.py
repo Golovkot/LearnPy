@@ -1,4 +1,4 @@
-import re, lxml.html
+import re
 
 f = open('cedict_ts.u8', 'r', encoding='utf-8')
 inp = open('stal.xml', 'r', encoding='utf-8')
